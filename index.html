@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RDM Bonus</title>
+  <style>
+    body { background: #fff; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 520px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: 1.3em; text-align: center; margin-bottom: 10px; color: #c2185b; }
+    label { font-weight: bold; display: block; margin-top: 12px; }
+    .input-row { display: flex; gap: 12px; }
+    .input-col { flex: 1; min-width: 0; }
+    input { width: 100%; box-sizing: border-box; padding: 8px; margin-top: 4px; margin-bottom: 8px; font-size: 1em; border-radius: 4px; border: 1px solid #ccc; background: #fff; }
+    .button-row { display: flex; gap: 12px; margin-top: 18px; margin-bottom: 4px; }
+    .side-btn { background: #1976d2; color: #fff; font-size: 1em; border: none; padding: 10px; width: 50%; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
+    .side-btn:hover { background: #0d47a1; }
+    .calc-btn { background: #388e3c; color: #fff; font-size: 1em; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
+    .calc-btn:hover { background: #2e7031; }
+    .result { background: #e8f5e9; color: #388e3c; font-size: 1.2em; font-weight: bold; text-align: center; margin-top: 20px; padding: 16px; border-radius: 8px; border: 2px solid #388e3c; }
+    .breakdown-box { background: #f5f5f5; color: #333; font-size: 0.97em; margin-top: 10px; padding: 14px; border-radius: 7px; border: 1px solid #bbb; overflow-x: auto; }
+    .breakdown-table { width: 100%; border-collapse: collapse; }
+    .breakdown-table th, .breakdown-table td { border: 1px solid #ddd; padding: 6px 8px; text-align: center; }
+    .breakdown-table th { background: #e0e0e0; font-weight: bold; }
+    .breakdown-table tr:last-child td { font-weight: bold; background: #eee; }
+    .section-title { font-size: 1.1em; margin-top: 16px; margin-bottom: 6px; color: #333; border-bottom: 1px solid #eee; }
+    .col-head { font-weight: bold; text-align: center; font-size: 0.95em; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Unofficial RDM Bonus Estimator</h1>
+
+    <form id="bonusForm" autocomplete="off" onsubmit="return false;">
+
+      <div class="section-title">Your Districts</div>
+      <div class="input-row">
+        <div class="input-col">
+          <label for="d1name">District 1 Name</label>
+          <input type="text" id="d1name" placeholder="District 1">
+        </div>
+        <div class="input-col">
+          <label for="d2name">District 2 Name</label>
+          <input type="text" id="d2name" placeholder="District 2">
+        </div>
+      </div>
+
+      <div class="section-title">GP MoM Compared to Region</div>
+      <div class="input-row">
+        <div class="input-col">
+          <div class="col-head">Last Month</div>
+          <label for="lastRegionGp">Region GP</label>
+          <input type="number" id="lastRegionGp" min="0" step="any" placeholder="e.g. 5000000">
+          <label for="lastD1Gp" id="lastD1GpLabel">District 1 GP</label>
+          <input type="number" id="lastD1Gp" min="0" step="any">
+          <label for="lastD2Gp" id="lastD2GpLabel">District 2 GP</label>
+          <input type="number" id="lastD2Gp" min="0" step="any">
+        </div>
+        <div class="input-col">
+          <div class="col-head">Current Month</div>
+          <label for="curRegionGp">Region GP</label>
+          <input type="number" id="curRegionGp" min="0" step="any" placeholder="e.g. 5200000">
+          <label for="curD1Gp" id="curD1GpLabel">District 1 GP</label>
+          <input type="number" id="curD1Gp" min="0" step="any">
+          <label for="curD2Gp" id="curD2GpLabel">District 2 GP</label>
+          <input type="number" id="curD2Gp" min="0" step="any">
+        </div>
+      </div>
+
+      <div class="section-title">CSLB Rank Increase</div>
+      <div class="input-row">
+        <div class="input-col">
+          <div class="col-head">Last Month Rank</div>
+          <label for="lastD1Rank" id="lastD1RankLabel">District 1</label>
+          <input type="number" id="lastD1Rank" min="1" step="1">
+          <label for="lastD2Rank" id="lastD2RankLabel">District 2</label>
+          <input type="number" id="lastD2Rank" min="1" step="1">
+        </div>
+        <div class="input-col">
+          <div class="col-head">This Month Rank</div>
+          <label for="curD1Rank" id="curD1RankLabel">District 1</label>
+          <input type="number" id="curD1Rank" min="1" step="1">
+          <label for="curD2Rank" id="curD2RankLabel">District 2</label>
+          <input type="number" id="curD2Rank" min="1" step="1">
+        </div>
+      </div>
+
+      <div class="section-title">BTS</div>
+      <label for="bts">BTS % Attained</label>
+      <input type="number" id="bts" min="0" max="200" step="0.01" placeholder="e.g. 100 for 100%">
+
+      <div class="section-title">Visa & P360</div>
+      <div class="input-row">
+        <div class="input-col">
+          <label for="visa">Visa % Attained</label>
+          <input type="number" id="visa" min="0" max="200" step="0.01" placeholder="e.g. 100">
+        </div>
+        <div class="input-col">
+          <label for="p360">P360 % Attained</label>
+          <input type="number" id="p360" min="0" max="200" step="0.01" placeholder="e.g. 100">
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button type="button" class="side-btn" onclick="resetForm()">Reset</button>
+        <button type="button" class="side-btn" onclick="maxPayout()">Max Payout</button>
+      </div>
+      <button type="button" class="calc-btn" onclick="calculateBonus()">Calculate Bonus</button>
+    </form>
+
+    <div id="result" class="result" style="display:none;"></div>
+    <div id="breakdown" class="breakdown-box" style="display:none;"></div>
+  </div>
+
+  <script>
+    const GP_BASE = 2500;
+    const BTS_BASE = 1000;
+    const VISA_P360_BASE = 1000;
+    const CSLB_PAYOUT = 1500;
+    const CSLB_MIN_AVG_INCREASE = 8;
+    const MIN_ATTAINMENT = 70;
+    const MAX_ATTAINMENT = 125;
+
+    const $ = id => document.getElementById(id);
+    const num = id => Number($(id).value);
+    const money = v => '$' + v.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    // Payout starts at 70% attainment and scales up to a 125% cap
+    function adjustPayout(percent, base) {
+      if (percent < MIN_ATTAINMENT) return 0;
+      return base * Math.min(percent, MAX_ATTAINMENT) / 100;
+    }
+
+    function districtNames() {
+      return [$('d1name').value.trim() || 'District 1', $('d2name').value.trim() || 'District 2'];
+    }
+
+    function updateLabels() {
+      const [d1, d2] = districtNames();
+      ['lastD1Gp', 'curD1Gp'].forEach(id => $(id + 'Label').textContent = d1 + ' GP');
+      ['lastD2Gp', 'curD2Gp'].forEach(id => $(id + 'Label').textContent = d2 + ' GP');
+      ['lastD1Rank', 'curD1Rank'].forEach(id => $(id + 'Label').textContent = d1);
+      ['lastD2Rank', 'curD2Rank'].forEach(id => $(id + 'Label').textContent = d2);
+    }
+    $('d1name').addEventListener('input', updateLabels);
+    $('d2name').addEventListener('input', updateLabels);
+
+    function resetForm() {
+      $('bonusForm').reset();
+      updateLabels();
+      $('result').style.display = 'none';
+      $('breakdown').style.display = 'none';
+    }
+
+    function maxPayout() {
+      const set = (id, v) => $(id).value = v;
+      set('lastRegionGp', 1000000); set('lastD1Gp', 100000); set('lastD2Gp', 100000);
+      set('curRegionGp', 1000000); set('curD1Gp', 130000); set('curD2Gp', 130000);
+      set('lastD1Rank', 20); set('lastD2Rank', 20);
+      set('curD1Rank', 5); set('curD2Rank', 5);
+      set('bts', 125); set('visa', 125); set('p360', 125);
+      $('result').style.display = 'none';
+      $('breakdown').style.display = 'none';
+    }
+
+    function calculateBonus() {
+      const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const [d1, d2] = districtNames().map(esc);
+
+      // GP MoM vs Region: district growth index divided by region growth index
+      const lastDistrictGp = num('lastD1Gp') + num('lastD2Gp');
+      const curDistrictGp = num('curD1Gp') + num('curD2Gp');
+      const lastRegionGp = num('lastRegionGp');
+      const curRegionGp = num('curRegionGp');
+      let gpAttained = 0;
+      if (lastDistrictGp > 0 && lastRegionGp > 0 && curRegionGp > 0) {
+        const districtGrowth = curDistrictGp / lastDistrictGp;
+        const regionGrowth = curRegionGp / lastRegionGp;
+        gpAttained = (districtGrowth / regionGrowth) * 100;
+      }
+      const gpPayout = adjustPayout(gpAttained, GP_BASE);
+
+      // CSLB: average of rank improvement (last rank - this rank) across both districts
+      const inc1 = num('lastD1Rank') - num('curD1Rank');
+      const inc2 = num('lastD2Rank') - num('curD2Rank');
+      const avgIncrease = (inc1 + inc2) / 2;
+      const cslbPayout = avgIncrease >= CSLB_MIN_AVG_INCREASE ? CSLB_PAYOUT : 0;
+
+      const bts = num('bts');
+      const btsPayout = adjustPayout(bts, BTS_BASE);
+
+      const visaP360Avg = (num('visa') + num('p360')) / 2;
+      const visaP360Payout = adjustPayout(visaP360Avg, VISA_P360_BASE);
+
+      const total = gpPayout + cslbPayout + btsPayout + visaP360Payout;
+
+      const rows = [
+        ['GP MoM vs Region', money(GP_BASE), `${gpAttained.toFixed(2)}%`, money(gpPayout)],
+        ['CSLB Rank Increase', money(CSLB_PAYOUT), `${avgIncrease.toFixed(1)} avg (${d1}: ${inc1}, ${d2}: ${inc2})`, money(cslbPayout)],
+        ['BTS', money(BTS_BASE), `${bts}%`, money(btsPayout)],
+        ['Visa & P360 Avg', money(VISA_P360_BASE), `${visaP360Avg.toFixed(2)}%`, money(visaP360Payout)],
+        ['TOTAL', '', '', money(total)]
+      ];
+
+      $('result').style.display = 'block';
+      $('result').innerHTML = `
+        <div>Estimated Bonus Payout:</div>
+        <div style="font-size:2em;">${money(total)}</div>`;
+
+      let html = `<table class="breakdown-table"><thead><tr>
+        <th>Bucket</th><th>Base (100%)</th><th>Attained</th><th>Total</th>
+      </tr></thead><tbody>`;
+      rows.forEach(r => {
+        html += `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      $('breakdown').style.display = 'block';
+      $('breakdown').innerHTML = html;
+    }
+  </script>
+</body>
+</html>
