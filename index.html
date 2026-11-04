@@ -179,12 +179,33 @@
       $('total').textContent = money(r.total);
     }
 
+    const STORAGE_KEY = 'rdm-bonus-inputs';
+    const inputs = document.querySelectorAll('input');
+
+    // Storage can be unavailable (private mode, blocked); the calculator still works without it
+    function saveInputs() {
+      try {
+        const data = {};
+        inputs.forEach(i => data[i.id] = i.value);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {}
+    }
+
+    function loadInputs() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        inputs.forEach(i => { if (typeof data[i.id] === 'string') i.value = data[i.id]; });
+      } catch (e) {}
+    }
+
     function resetAll() {
-      document.querySelectorAll('input').forEach(i => i.value = '');
+      inputs.forEach(i => i.value = '');
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
       render();
     }
 
-    document.querySelectorAll('input').forEach(i => i.addEventListener('input', render));
+    inputs.forEach(i => i.addEventListener('input', () => { saveInputs(); render(); }));
+    loadInputs();
     render();
   </script>
 </body>
