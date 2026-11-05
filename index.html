@@ -209,7 +209,26 @@
     }
 
     inputs.forEach(i => i.addEventListener('input', () => { saveInputs(); render(); }));
+
+    // GP inputs show as currency and metric inputs as percentages once entered
+    function formatInput(el) {
+      let kind = null;
+      if (/^(prev|cur)\d$/.test(el.id)) kind = 'currency';
+      else if (/^r\d_\d$/.test(el.id)) kind = 'percent';
+      if (!kind) return;
+      const n = parse(el.id);
+      if (!Number.isFinite(n)) return;
+      el.value = kind === 'currency'
+        ? '$' + n.toLocaleString('en-US', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 })
+        : n.toLocaleString('en-US', { maximumFractionDigits: 2, useGrouping: false }) + '%';
+    }
+
+    inputs.forEach(i => {
+      i.addEventListener('blur', () => { formatInput(i); saveInputs(); });
+      i.addEventListener('focus', () => i.select());
+    });
     loadInputs();
+    inputs.forEach(formatInput);
     render();
   </script>
 </body>
