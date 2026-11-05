@@ -16,6 +16,7 @@
     td.calc { background: #fff; }
     td.in { background: #ffff00; padding: 0; }
     td.in input { width: 100%; box-sizing: border-box; border: none; background: transparent; padding: 6px 8px; font-size: 1em; text-align: center; }
+    td.in input.name-input { text-align: left; font-weight: bold; }
     td.in input:focus { outline: 2px solid #1976d2; outline-offset: -2px; }
     .head-dark th { background: #000; color: #ff3b30; }
     .weight { color: #d32f2f; font-weight: bold; background: #fff; }
@@ -44,11 +45,11 @@
               <td class="in"><input id="prev0" inputmode="decimal" placeholder="$0"></td>
               <td class="in"><input id="cur0" inputmode="decimal" placeholder="$0"></td>
               <td class="calc" id="mom0">—</td></tr>
-            <tr><td class="name">MO/IA/NE</td>
+            <tr><td class="in"><input id="name1" class="name-input" value="District 1" placeholder="District 1"></td>
               <td class="in"><input id="prev1" inputmode="decimal" placeholder="$0"></td>
               <td class="in"><input id="cur1" inputmode="decimal" placeholder="$0"></td>
               <td class="calc" id="mom1">—</td></tr>
-            <tr><td class="name">DFW EAST</td>
+            <tr><td class="in"><input id="name2" class="name-input" value="District 2" placeholder="District 2"></td>
               <td class="in"><input id="prev2" inputmode="decimal" placeholder="$0"></td>
               <td class="in"><input id="cur2" inputmode="decimal" placeholder="$0"></td>
               <td class="calc" id="mom2">—</td></tr>
@@ -94,13 +95,13 @@
             <td class="in"><input id="r0_2" inputmode="decimal" placeholder="%"></td>
             <td class="in"><input id="r0_3" inputmode="decimal" placeholder="%"></td>
             <td class="in"><input id="r0_4" inputmode="decimal" placeholder="%"></td></tr>
-          <tr><td class="name">MO/IA/NE</td>
+          <tr><td class="name" id="label1">District 1</td>
             <td class="calc" id="m1_0">—</td>
             <td class="in"><input id="r1_1" inputmode="decimal" placeholder="%"></td>
             <td class="in"><input id="r1_2" inputmode="decimal" placeholder="%"></td>
             <td class="in"><input id="r1_3" inputmode="decimal" placeholder="%"></td>
             <td class="in"><input id="r1_4" inputmode="decimal" placeholder="%"></td></tr>
-          <tr><td class="name">DFW EAST</td>
+          <tr><td class="name" id="label2">District 2</td>
             <td class="calc" id="m2_0">—</td>
             <td class="in"><input id="r2_1" inputmode="decimal" placeholder="%"></td>
             <td class="in"><input id="r2_2" inputmode="decimal" placeholder="%"></td>
@@ -174,6 +175,9 @@
         $('act' + c).textContent = pctText(r.actuals[c]);
         $('pw' + c).textContent = pctText(r.weights[c]);
       });
+      [1, 2].forEach(i => {
+        $('label' + i).textContent = $('name' + i).value.trim() || 'District ' + i;
+      });
       $('base').textContent = money(BASE);
       $('pct').textContent = pctText(r.percentage);
       $('total').textContent = money(r.total);
@@ -199,7 +203,7 @@
     }
 
     function resetAll() {
-      inputs.forEach(i => i.value = '');
+      inputs.forEach(i => i.value = i.defaultValue);
       try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
       render();
     }
