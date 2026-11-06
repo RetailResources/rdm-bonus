@@ -6,185 +6,200 @@
   <title>RDM Bonus</title>
   <style>
     body { background: #fff; font-family: Arial, sans-serif; margin: 0; }
-    .container { max-width: 860px; margin: 0 auto; padding: 24px; }
+    .container { max-width: 560px; margin: 0 auto; padding: 24px; }
     h1 { font-size: 1.3em; text-align: center; margin-bottom: 16px; color: #c2185b; }
-    .scroll { overflow-x: auto; margin-bottom: 24px; }
+    .scroll { overflow-x: auto; margin-bottom: 20px; }
     table { border-collapse: collapse; width: 100%; font-size: 0.95em; }
-    th, td { border: 1px solid #999; padding: 6px 8px; text-align: center; }
+    th, td { border: 1px solid #666; padding: 5px 8px; text-align: center; }
     th { background: #d9d9d9; }
-    td.name { text-align: left; background: #f2f2f2; }
+    th.title { background: #bfbfbf; }
+    td.name { text-align: left; background: #f2f2f2; font-weight: bold; }
     td.calc { background: #fff; }
     td.in { background: #ffff00; padding: 0; }
-    td.in input { width: 100%; box-sizing: border-box; border: none; background: transparent; padding: 6px 8px; font-size: 1em; text-align: center; }
-    td.in input.name-input { text-align: left; font-weight: bold; }
-    td.in input:focus { outline: 2px solid #1976d2; outline-offset: -2px; }
-    .head-dark th { background: #000; color: #ff3b30; }
-    .weight { color: #d32f2f; font-weight: bold; background: #fff; }
-    .green { background: #c6e0b4; }
-    .payout-head { background: #548235; color: #fff; font-weight: bold; }
-    .total-label { background: #548235; color: #fff; font-weight: bold; }
-    .total-value { background: #00b050; color: #fff; font-weight: bold; font-size: 1.1em; }
-    .payout-table { width: auto; min-width: 280px; }
-    .top-wrap { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
-    .top-wrap .grow { flex: 1; min-width: 420px; }
-    .note { font-size: 0.85em; color: #555; text-align: center; }
+    td.in input, td.in select { width: 100%; box-sizing: border-box; border: none; background: transparent; padding: 5px 8px; font-size: 1em; text-align: center; }
+    th input.name-input { width: 100%; box-sizing: border-box; border: none; background: transparent; padding: 5px 8px; font-size: 1em; text-align: center; font-weight: bold; }
+    th input.name-input:focus { outline: 2px solid #1976d2; outline-offset: -2px; }
+    td.in input.name-input { text-align: center; font-weight: bold; }
+    td.in input:focus, td.in select:focus { outline: 2px solid #1976d2; outline-offset: -2px; }
+    td.black { background: #000; }
+    td.pay { background: #c6e0b4; }
+    td.nopay { background: #f8cbad; color: #c00000; }
+    td.money { font-weight: bold; }
+    td.total { background: #00b050; color: #fff; font-weight: bold; font-size: 1.1em; }
     .reset { background: #1976d2; color: #fff; border: none; border-radius: 5px; padding: 10px 18px; font-size: 1em; cursor: pointer; }
     .reset:hover { background: #0d47a1; }
+    .note { font-size: 0.85em; color: #555; text-align: center; margin-top: 12px; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>RDM Bonus Estimator</h1>
-
-    <div class="top-wrap">
-      <div class="scroll grow">
-        <table>
-          <thead><tr><th></th><th>Previous Month GP</th><th>Current Month GP</th><th>MoM GP Growth</th></tr></thead>
-          <tbody>
-            <tr><td class="name">Connectivity Source</td>
-              <td class="in"><input id="prev0" inputmode="decimal" placeholder="$0"></td>
-              <td class="in"><input id="cur0" inputmode="decimal" placeholder="$0"></td>
-              <td class="calc" id="mom0">—</td></tr>
-            <tr><td class="in"><input id="name1" class="name-input" value="District 1" placeholder="District 1"></td>
-              <td class="in"><input id="prev1" inputmode="decimal" placeholder="$0"></td>
-              <td class="in"><input id="cur1" inputmode="decimal" placeholder="$0"></td>
-              <td class="calc" id="mom1">—</td></tr>
-            <tr><td class="in"><input id="name2" class="name-input" value="District 2" placeholder="District 2"></td>
-              <td class="in"><input id="prev2" inputmode="decimal" placeholder="$0"></td>
-              <td class="in"><input id="cur2" inputmode="decimal" placeholder="$0"></td>
-              <td class="calc" id="mom2">—</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="scroll">
-        <table class="payout-table">
-          <thead><tr><th colspan="2" class="payout-head">RDM PAYOUT CALCULATION</th></tr></thead>
-          <tbody>
-            <tr><td class="calc">Base</td><td class="calc" id="base"></td></tr>
-            <tr><td class="calc">Percentage</td><td class="calc" id="pct">—</td></tr>
-            <tr><td class="total-label">TOTAL PAYOUT</td><td class="total-value" id="total">$0</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr class="head-dark">
-            <th rowspan="2" style="background:#d9d9d9;color:#000;">Metrics &amp; Weights</th>
-            <th colspan="3">Revenue Growth</th>
-            <th>T-Mobile Priority</th>
-            <th>CS Priority</th>
-          </tr>
-          <tr>
-            <th>MoM GP Growth</th><th>Activation Target</th><th>Accessory GP Target</th>
-            <th>New Account Attainment</th><th>Social Media</th>
-          </tr>
-          <tr>
-            <th></th>
-            <th class="weight">40%</th><th class="weight">20%</th><th class="weight">20%</th>
-            <th class="weight">10%</th><th class="weight">10%</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class="name">Connectivity Source</td>
-            <td class="calc" id="m0_0">—</td>
-            <td class="in"><input id="r0_1" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r0_2" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r0_3" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r0_4" inputmode="decimal" placeholder="%"></td></tr>
-          <tr><td class="name" id="label1">District 1</td>
-            <td class="calc" id="m1_0">—</td>
-            <td class="in"><input id="r1_1" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r1_2" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r1_3" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r1_4" inputmode="decimal" placeholder="%"></td></tr>
-          <tr><td class="name" id="label2">District 2</td>
-            <td class="calc" id="m2_0">—</td>
-            <td class="in"><input id="r2_1" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r2_2" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r2_3" inputmode="decimal" placeholder="%"></td>
-            <td class="in"><input id="r2_4" inputmode="decimal" placeholder="%"></td></tr>
-          <tr><td class="name">Assigned District Average</td>
-            <td class="calc" id="avg0">—</td><td class="calc" id="avg1">—</td><td class="calc" id="avg2">—</td>
-            <td class="calc" id="avg3">—</td><td class="calc" id="avg4">—</td></tr>
-          <tr><td colspan="6" style="border:none;height:10px;"></td></tr>
-          <tr><td class="name">Actual</td>
-            <td class="green" id="act0">—</td><td class="green" id="act1">—</td><td class="green" id="act2">—</td>
-            <td class="green" id="act3">—</td><td class="green" id="act4">—</td></tr>
-          <tr><td class="name">Payout Weight</td>
-            <td class="green" id="pw0">—</td><td class="green" id="pw1">—</td><td class="green" id="pw2">—</td>
-            <td class="green" id="pw3">—</td><td class="green" id="pw4">—</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div style="text-align:center;margin-bottom:12px;"><button class="reset" onclick="resetAll()">Reset</button></div>
-    <div class="note">Yellow cells are editable. Each metric is capped at 125%.</div>
+    <div id="app"></div>
+    <div style="text-align:center;"><button class="reset" onclick="resetAll()">Reset</button></div>
+    <div class="note">Yellow cells are editable. Does not include operational losses.</div>
   </div>
 
   <script>
-    const BASE = 5500;
-    const WEIGHTS = [40, 20, 20, 10, 10];
-    const MIN_ATTAINMENT = 70;
-    const MAX_ATTAINMENT = 125;
+    // Company base payouts per metric; each district can earn half of each
+    const BASE = { cslb: 1575, gp: 1350, acc: 900, visa: 675 };
+    const BONUS_PER_DISTRICT = 500;
+    const CERT_BONUS = 1000;
+    const METRICS = [
+      { key: 'cslb', label: 'CSLB Rank', kind: 'int' },
+      { key: 'gp', label: 'GP per HR', kind: 'pct' },
+      { key: 'acc', label: 'New Accounts', kind: 'pct' },
+      { key: 'visa', label: 'Visa', kind: 'pct' }
+    ];
+    const DISTRICT_POTENTIAL = METRICS.reduce((s, m) => s + BASE[m.key] / 2, 0);
 
     const $ = id => document.getElementById(id);
-    const parse = id => {
+    const field = (id, kind, extra = '') =>
+      `<td class="in"><input id="${id}" data-kind="${kind}" inputmode="decimal" ${extra}></td>`;
+    const nameField = (id, def) =>
+      `<input id="${id}" class="name-input" value="${def}" placeholder="${def}">`;
+
+    function districtTable(n, def) {
+      const rows = METRICS.map(m => `<tr><td class="name">${m.label}</td>
+        ${field(`d${n}_${m.key}_p`, m.kind)}${field(`d${n}_${m.key}_c`, m.kind)}
+        <td class="calc" id="d${n}_${m.key}_m">—</td><td class="calc money" id="d${n}_${m.key}_pay">—</td></tr>`).join('');
+      return `<div class="scroll"><table>
+        <thead><tr><th colspan="5" class="title" style="padding:0;background:#ffff00;">${nameField('name' + n, def)}</th></tr>
+        <tr><th>Metrics</th><th>Previous Month</th><th>Current Month</th><th>MoM</th><th>Payouts</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>`;
+    }
+
+    function bonusTable(title, prefix) {
+      const rows = [1, 2].map(n => `<tr><td class="name" id="${prefix}label${n}"></td>
+        ${field(`${prefix}${n}_p`, 'int')}${field(`${prefix}${n}_c`, 'int')}
+        <td class="calc money" id="${prefix}${n}_pay">—</td></tr>`).join('');
+      return `<div class="scroll"><table>
+        <thead><tr><th colspan="4" class="title">${title}</th></tr>
+        <tr><th>District</th><th>Previous Rank</th><th>Current Rank</th><th>Payouts</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>`;
+    }
+
+    const companyRows = METRICS.map(m => m.key === 'cslb'
+      ? `<tr><td class="name">${m.label}</td><td colspan="3" class="black"></td><td class="calc money">${'$' + BASE.cslb.toFixed(2)}</td></tr>`
+      : `<tr><td class="name">${m.label}</td>
+          ${field(`c_${m.key}_p`, m.kind)}${field(`c_${m.key}_c`, m.kind)}
+          <td class="calc" id="c_${m.key}_m">—</td><td class="calc money">${'$' + BASE[m.key].toFixed(2)}</td></tr>`).join('');
+
+    $('app').innerHTML = `
+      <div class="scroll"><table>
+        <thead><tr><th colspan="5" class="title">Company Performance</th></tr>
+        <tr><th>Metrics</th><th>Previous Month</th><th>Current Month</th><th>MoM</th><th>Base Payouts</th></tr></thead>
+        <tbody>${companyRows}</tbody></table></div>
+      ${districtTable(1, 'District 1')}
+      ${districtTable(2, 'District 2')}
+      ${bonusTable('Sustained Bonus', 's')}
+      ${bonusTable('Graduation Bonus', 'g')}
+      <div class="scroll"><table><tbody><tr>
+        <td class="name">Certification Bonus</td>
+        <td class="in"><select id="cert" data-kind="select"><option value="no">No</option><option value="yes">Yes</option></select></td>
+        <td class="calc money" id="cert_pay">$0</td></tr></tbody></table></div>
+      <div class="scroll"><table>
+        <thead><tr><th>RDM Payouts</th><th>Potential</th><th>Payout</th></tr></thead>
+        <tbody id="summary"></tbody></table></div>`;
+
+    // Bonus district names are edited in the Sustained table and mirrored in Graduation
+    $('slabel1').outerHTML = `<td class="in">${nameField('name3', 'District 3')}</td>`;
+    $('slabel2').outerHTML = `<td class="in">${nameField('name4', 'District 4')}</td>`;
+
+    const money = v => '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const moneyWhole = v => '$' + v.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    const pctText = v => Number.isFinite(v) ? v.toFixed(2) + '%' : '—';
+
+    function parse(id) {
       const s = $(id).value.replace(/[$,%\s]/g, '');
       if (s === '') return NaN;
       const n = Number(s);
       return Number.isFinite(n) ? n : NaN;
-    };
-    const pctText = v => Number.isFinite(v) ? v.toFixed(2) + '%' : '—';
-    const money = v => '$' + Math.round(v).toLocaleString();
+    }
+    const round2 = v => Math.round(v * 100) / 100;
 
-    const mom = (prev, cur) => (prev > 0 && Number.isFinite(cur)) ? cur / prev * 100 : NaN;
-    const avg = (a, b) => (Number.isFinite(a) && Number.isFinite(b)) ? (a + b) / 2 : NaN;
-    const ratio = (district, region) => (Number.isFinite(district) && region > 0) ? district / region * 100 : NaN;
+    // Percent metrics change in percentage points; rank improves when the number drops
+    const pctMom = (p, c) => (Number.isFinite(p) && Number.isFinite(c)) ? round2(c - p) : NaN;
+    const rankMom = (p, c) => (Number.isFinite(p) && Number.isFinite(c)) ? p - c : NaN;
 
-    // No payout below the minimum attainment; capped at the maximum
-    function weighted(weight, actual) {
-      if (!Number.isFinite(actual) || actual < MIN_ATTAINMENT) return 0;
-      return weight * Math.min(actual, MAX_ATTAINMENT) / 100;
+    function compute(get) {
+      const companyMom = {};
+      METRICS.filter(m => m.key !== 'cslb').forEach(m => {
+        companyMom[m.key] = pctMom(get(`c_${m.key}_p`), get(`c_${m.key}_c`));
+      });
+
+      const districts = [1, 2].map(n => {
+        const metrics = {};
+        let total = 0;
+        METRICS.forEach(m => {
+          const p = get(`d${n}_${m.key}_p`), c = get(`d${n}_${m.key}_c`);
+          const mom = m.key === 'cslb' ? rankMom(p, c) : pctMom(p, c);
+          // CSLB pays when rank does not get worse; other metrics pay when the district beats the company MoM
+          const threshold = m.key === 'cslb' ? 0 : companyMom[m.key];
+          const known = Number.isFinite(mom) && Number.isFinite(threshold);
+          const pays = known && mom >= threshold;
+          const payout = pays ? BASE[m.key] / 2 : 0;
+          total += payout;
+          metrics[m.key] = { mom, known, pays, payout };
+        });
+        return { metrics, total };
+      });
+
+      const bonus = prefix => [1, 2].map(n => {
+        const mom = rankMom(get(`${prefix}${n}_p`), get(`${prefix}${n}_c`));
+        return { known: Number.isFinite(mom), payout: mom > 0 ? BONUS_PER_DISTRICT : 0 };
+      });
+      const sustained = bonus('s');
+      const graduation = bonus('g');
+      const sum = list => list.reduce((s, b) => s + b.payout, 0);
+      const cert = get('cert') === 'yes' ? CERT_BONUS : 0;
+      const sustainedTotal = sum(sustained), graduationTotal = sum(graduation);
+      const total = districts[0].total + districts[1].total + sustainedTotal + graduationTotal + cert;
+      return { companyMom, districts, sustained, graduation, sustainedTotal, graduationTotal, cert, total };
     }
 
-    function compute(input) {
-      const moms = input.gp.map(g => mom(g.prev, g.cur));
-      const rows = [0, 1, 2].map(i => [moms[i], ...input.metrics[i]]);
-      const averages = [0, 1, 2, 3, 4].map(c => avg(rows[1][c], rows[2][c]));
-      const actuals = averages.map((a, c) => ratio(a, rows[0][c]));
-      const weights = actuals.map((a, c) => weighted(WEIGHTS[c], a));
-      const percentage = weights.reduce((s, w) => s + w, 0);
-      return { moms, averages, actuals, weights, percentage, total: BASE * percentage / 100 };
-    }
+    const readValue = id => id === 'cert' ? $(id).value : parse(id);
+    const momText = (m, v) => m.kind === 'int' ? (Number.isFinite(v) ? String(v) : '—') : pctText(v);
 
     function render() {
-      const gp = [0, 1, 2].map(i => ({ prev: parse('prev' + i), cur: parse('cur' + i) }));
-      const metrics = [0, 1, 2].map(i => [1, 2, 3, 4].map(c => parse(`r${i}_${c}`)));
-      const r = compute({ gp, metrics });
+      const r = compute(readValue);
+      const name = (id, def) => $(id).value.trim() || def;
+      const names = [1, 2, 3, 4].map(n => name('name' + n, 'District ' + n));
 
-      [0, 1, 2].forEach(i => {
-        $('mom' + i).textContent = pctText(r.moms[i]);
-        $(`m${i}_0`).textContent = pctText(r.moms[i]);
+      METRICS.filter(m => m.key !== 'cslb').forEach(m => {
+        $(`c_${m.key}_m`).textContent = pctText(r.companyMom[m.key]);
       });
-      [0, 1, 2, 3, 4].forEach(c => {
-        $('avg' + c).textContent = pctText(r.averages[c]);
-        $('act' + c).textContent = pctText(r.actuals[c]);
-        $('pw' + c).textContent = pctText(r.weights[c]);
+      r.districts.forEach((d, i) => {
+        METRICS.forEach(m => {
+          const x = d.metrics[m.key];
+          $(`d${i + 1}_${m.key}_m`).textContent = momText(m, x.mom);
+          $(`d${i + 1}_${m.key}_m`).className = 'calc ' + (x.known ? (x.pays ? 'pay' : 'nopay') : '');
+          $(`d${i + 1}_${m.key}_pay`).textContent = x.known ? money(x.payout) : '—';
+        });
       });
-      [1, 2].forEach(i => {
-        $('label' + i).textContent = $('name' + i).value.trim() || 'District ' + i;
+      [['s', r.sustained], ['g', r.graduation]].forEach(([prefix, list]) => {
+        list.forEach((b, i) => { $(`${prefix}${i + 1}_pay`).textContent = b.known ? moneyWhole(b.payout) : '—'; });
       });
-      $('base').textContent = money(BASE);
-      $('pct').textContent = pctText(r.percentage);
-      $('total').textContent = money(r.total);
+      $('glabel1').textContent = names[2];
+      $('glabel2').textContent = names[3];
+      $('cert_pay').textContent = moneyWhole(r.cert);
+
+      const rows = [
+        [names[0], DISTRICT_POTENTIAL, r.districts[0].total, true],
+        [names[1], DISTRICT_POTENTIAL, r.districts[1].total, true],
+        ['Sustained Bonus', 2 * BONUS_PER_DISTRICT, r.sustainedTotal, false],
+        ['Graduation Bonus', 2 * BONUS_PER_DISTRICT, r.graduationTotal, false],
+        ['Certification Bonus', CERT_BONUS, r.cert, false]
+      ];
+      const fmt = (v, cents) => cents ? money(v) : moneyWhole(v);
+      $('summary').innerHTML = rows.map(([label, pot, pay, cents]) =>
+        `<tr><td class="name"></td><td class="calc">${fmt(pot, cents)}</td><td class="calc money">${fmt(pay, cents)}</td></tr>`).join('')
+        + `<tr><td colspan="2" class="name" style="text-align:right;">TOTAL</td><td class="total">${money(r.total)}</td></tr>`;
+      // Labels are set as text so district names are never parsed as HTML
+      [...$('summary').rows].slice(0, 5).forEach((row, i) => { row.cells[0].textContent = rows[i][0]; });
     }
 
-    const STORAGE_KEY = 'rdm-bonus-inputs';
-    const inputs = document.querySelectorAll('input');
+    const STORAGE_KEY = 'rdm-bonus-inputs-v2';
+    const inputs = document.querySelectorAll('input, select');
 
     // Storage can be unavailable (private mode, blocked); the calculator still works without it
     function saveInputs() {
@@ -203,29 +218,24 @@
     }
 
     function resetAll() {
-      inputs.forEach(i => i.value = i.defaultValue);
+      inputs.forEach(i => { i.value = i.tagName === 'SELECT' ? i.options[0].value : i.defaultValue; });
       try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
       render();
     }
 
-    inputs.forEach(i => i.addEventListener('input', () => { saveInputs(); render(); }));
-
-    // GP inputs show as currency and metric inputs as percentages once entered
+    // Percent inputs show a % sign once entered
     function formatInput(el) {
-      let kind = null;
-      if (/^(prev|cur)\d$/.test(el.id)) kind = 'currency';
-      else if (/^r\d_\d$/.test(el.id)) kind = 'percent';
-      if (!kind) return;
+      if (el.dataset.kind !== 'pct') return;
       const n = parse(el.id);
       if (!Number.isFinite(n)) return;
-      el.value = kind === 'currency'
-        ? '$' + n.toLocaleString('en-US', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 })
-        : n.toLocaleString('en-US', { maximumFractionDigits: 2, useGrouping: false }) + '%';
+      el.value = n.toLocaleString('en-US', { maximumFractionDigits: 2, useGrouping: false }) + '%';
     }
 
     inputs.forEach(i => {
+      i.addEventListener('input', () => { saveInputs(); render(); });
+      i.addEventListener('change', () => { saveInputs(); render(); });
       i.addEventListener('blur', () => { formatInput(i); saveInputs(); });
-      i.addEventListener('focus', () => i.select());
+      if (i.tagName === 'INPUT') i.addEventListener('focus', () => i.select());
     });
     loadInputs();
     inputs.forEach(formatInput);
