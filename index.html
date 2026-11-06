@@ -9,7 +9,10 @@
     .container { max-width: 560px; margin: 0 auto; padding: 24px; }
     h1 { font-size: 1.3em; text-align: center; margin-bottom: 16px; color: #c2185b; }
     .scroll { overflow-x: auto; margin-bottom: 20px; }
-    table { border-collapse: collapse; width: 100%; font-size: 0.95em; }
+    /* Every column is 20% of the container, so all tables share one column width */
+    table { border-collapse: collapse; table-layout: fixed; width: 100%; font-size: 0.95em; }
+    table.c4 { width: 80%; }
+    table.c3 { width: 60%; }
     th, td { border: 1px solid #666; padding: 5px 8px; text-align: center; }
     th { background: #d9d9d9; }
     th.title { background: #bfbfbf; }
@@ -20,6 +23,9 @@
     th input.name-input { width: 100%; box-sizing: border-box; border: none; background: transparent; padding: 5px 8px; font-size: 1em; text-align: center; font-weight: bold; }
     th input.name-input:focus { outline: 2px solid #1976d2; outline-offset: -2px; }
     td.in input.name-input { text-align: center; font-weight: bold; }
+    td.name-cell { padding: 0; background: #f2f2f2; }
+    td.name-cell input { width: 100%; box-sizing: border-box; border: none; background: transparent; padding: 5px 8px; font-size: 1em; text-align: left; font-weight: bold; }
+    td.name-cell input:focus { outline: 2px solid #1976d2; outline-offset: -2px; }
     td.in input:focus, td.in select:focus { outline: 2px solid #1976d2; outline-offset: -2px; }
     td.black { background: #000; }
     td.pay { background: #c6e0b4; }
@@ -63,16 +69,16 @@
         ${field(`d${n}_${m.key}_p`, m.kind)}${field(`d${n}_${m.key}_c`, m.kind)}
         <td class="calc" id="d${n}_${m.key}_m">—</td><td class="calc money" id="d${n}_${m.key}_pay">—</td></tr>`).join('');
       return `<div class="scroll"><table>
-        <thead><tr><th colspan="5" class="title" style="padding:0;background:#ffff00;">${nameField('name' + n, def)}</th></tr>
+        <thead><tr><th colspan="5" class="title" style="padding:0;">${nameField('name' + n, def)}</th></tr>
         <tr><th>Metrics</th><th>Previous Month</th><th>Current Month</th><th>MoM</th><th>Payouts</th></tr></thead>
         <tbody>${rows}</tbody></table></div>`;
     }
 
     function bonusTable(title, prefix) {
-      const rows = [1, 2].map(n => `<tr><td class="name" id="${prefix}label${n}"></td>
+      const rows = [1, 2].map(n => `<tr><td class="name-cell">${nameField(`${prefix}name${n}`, `District ${n + 2}`)}</td>
         ${field(`${prefix}${n}_p`, 'int')}${field(`${prefix}${n}_c`, 'int')}
         <td class="calc money" id="${prefix}${n}_pay">—</td></tr>`).join('');
-      return `<div class="scroll"><table>
+      return `<div class="scroll"><table class="c4">
         <thead><tr><th colspan="4" class="title">${title}</th></tr>
         <tr><th>District</th><th>Previous Rank</th><th>Current Rank</th><th>Payouts</th></tr></thead>
         <tbody>${rows}</tbody></table></div>`;
@@ -93,17 +99,13 @@
       ${districtTable(2, 'District 2')}
       ${bonusTable('Sustained Bonus', 's')}
       ${bonusTable('Graduation Bonus', 'g')}
-      <div class="scroll"><table><tbody><tr>
+      <div class="scroll"><table class="c3"><tbody><tr>
         <td class="name">Certification Bonus</td>
         <td class="in"><select id="cert" data-kind="select"><option value="no">No</option><option value="yes">Yes</option></select></td>
         <td class="calc money" id="cert_pay">$0</td></tr></tbody></table></div>
-      <div class="scroll"><table>
+      <div class="scroll"><table class="c3">
         <thead><tr><th>RDM Payouts</th><th>Potential</th><th>Payout</th></tr></thead>
         <tbody id="summary"></tbody></table></div>`;
-
-    // Bonus district names are edited in the Sustained table and mirrored in Graduation
-    $('slabel1').outerHTML = `<td class="in">${nameField('name3', 'District 3')}</td>`;
-    $('slabel2').outerHTML = `<td class="in">${nameField('name4', 'District 4')}</td>`;
 
     const money = v => '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const moneyWhole = v => '$' + v.toLocaleString('en-US', { maximumFractionDigits: 0 });
@@ -163,7 +165,7 @@
     function render() {
       const r = compute(readValue);
       const name = (id, def) => $(id).value.trim() || def;
-      const names = [1, 2, 3, 4].map(n => name('name' + n, 'District ' + n));
+      const names = [1, 2].map(n => name('name' + n, 'District ' + n));
 
       METRICS.filter(m => m.key !== 'cslb').forEach(m => {
         $(`c_${m.key}_m`).textContent = pctText(r.companyMom[m.key]);
@@ -179,8 +181,6 @@
       [['s', r.sustained], ['g', r.graduation]].forEach(([prefix, list]) => {
         list.forEach((b, i) => { $(`${prefix}${i + 1}_pay`).textContent = b.known ? moneyWhole(b.payout) : '—'; });
       });
-      $('glabel1').textContent = names[2];
-      $('glabel2').textContent = names[3];
       $('cert_pay').textContent = moneyWhole(r.cert);
 
       const rows = [
@@ -193,9 +193,9 @@
       const fmt = (v, cents) => cents ? money(v) : moneyWhole(v);
       $('summary').innerHTML = rows.map(([label, pot, pay, cents]) =>
         `<tr><td class="name"></td><td class="calc">${fmt(pot, cents)}</td><td class="calc money">${fmt(pay, cents)}</td></tr>`).join('')
-        + `<tr><td colspan="2" class="name" style="text-align:right;">TOTAL</td><td class="total">${money(r.total)}</td></tr>`;
+        + `<tr><td class="name">TOTAL</td><td class="calc money">${money(rows.reduce((s, x) => s + x[1], 0))}</td><td class="total">${money(r.total)}</td></tr>`;
       // Labels are set as text so district names are never parsed as HTML
-      [...$('summary').rows].slice(0, 5).forEach((row, i) => { row.cells[0].textContent = rows[i][0]; });
+      [...$('summary').rows].slice(0, rows.length).forEach((row, i) => { row.cells[0].textContent = rows[i][0]; });
     }
 
     const STORAGE_KEY = 'rdm-bonus-inputs-v2';
