@@ -6,22 +6,22 @@
   <title>RDM Bonus</title>
   <style>
     body { background: #fff; font-family: Arial, sans-serif; margin: 0; }
-    .container { max-width: 670px; margin: 0 auto; padding: 24px; }
+    .container { max-width: 622px; margin: 0 auto; padding: 24px; }
     h1 { font-size: calc(1.3em - 2pt); text-align: center; margin-bottom: 16px; color: #c2185b; }
     .scroll { overflow-x: auto; margin-bottom: 20px; }
-    table { border-collapse: collapse; table-layout: fixed; width: 670px; font-size: calc(0.95rem - 2pt); }
-    table.c4 { width: 570px; }
-    table.c3 { width: 440px; }
+    table { border-collapse: collapse; table-layout: fixed; width: 622px; font-size: calc(0.95rem - 2pt); }
+    table.c4 { width: 522px; }
+    table.c3 { width: 408px; }
     col.first-column { width: 180px; }
-    col.data-column { width: 130px; }
+    col.data-column { width: 114px; }
     col.payout-column { width: 100px; }
     th, td { border: 1px solid #666; padding: 5px 8px; text-align: center; }
     th { background: #d9d9d9; }
     th.title { background: #bfbfbf; font-size: 0.95rem; }
     td.name { text-align: left; background: #f2f2f2; font-weight: bold; }
     td.calc { background: #fff; }
-    td.in { background: #ffff00; padding: 0; }
-    td.in input, td.in select { width: 100%; box-sizing: border-box; border: none; background: transparent; padding: 5px 8px; font-size: 1em; text-align: center; }
+    td.in { background: #e8f3ff; padding: 0; }
+    td.in input, td.in select { width: 100%; box-sizing: border-box; border: none; background: transparent; box-shadow: inset 0 0 0 1px #8bb9df; padding: 5px 8px; font-size: 1em; text-align: center; }
     th input.name-input { width: 100%; box-sizing: border-box; border: none; background: transparent; padding: 5px 8px; font-size: 1em; text-align: center; font-weight: bold; }
     th input.name-input:focus { outline: 2px solid #1976d2; outline-offset: -2px; }
     td.in input.name-input { text-align: center; font-weight: bold; }
@@ -44,7 +44,7 @@
     <h1>RDM Bonus Estimator</h1>
     <div id="app"></div>
     <div style="text-align:center;"><button class="reset" onclick="resetAll()">Reset</button></div>
-    <div class="note">Yellow cells are editable. Does not include operational losses.</div>
+    <div class="note">Blue cells and district names are editable. Does not include operational losses.</div>
   </div>
 
   <script>
@@ -78,7 +78,7 @@
     }
 
     function bonusTable(title, prefix) {
-      const rows = [1, 2].map(n => `<tr><td class="name-cell">${nameField(`${prefix}name${n}`, `District ${n + 2}`)}</td>
+      const rows = [1, 2].map(n => `<tr><td class="name-cell">${nameField(`${prefix}name${n}`, 'District Name')}</td>
         ${field(`${prefix}${n}_p`, 'int')}${field(`${prefix}${n}_c`, 'int')}
         <td class="calc money" id="${prefix}${n}_pay">—</td></tr>`).join('');
       return `<div class="scroll"><table class="c4">
@@ -155,7 +155,7 @@
 
       const bonus = prefix => [1, 2].map(n => {
         const mom = rankMom(get(`${prefix}${n}_p`), get(`${prefix}${n}_c`));
-        return { known: Number.isFinite(mom), payout: mom > 0 ? BONUS_PER_DISTRICT : 0 };
+        return { known: Number.isFinite(mom), payout: mom >= 0 ? BONUS_PER_DISTRICT : 0 };
       });
       const sustained = bonus('s');
       const graduation = bonus('g');
