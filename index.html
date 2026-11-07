@@ -6,16 +6,18 @@
   <title>RDM Bonus</title>
   <style>
     body { background: #fff; font-family: Arial, sans-serif; margin: 0; }
-    .container { max-width: 580px; margin: 0 auto; padding: 24px; }
-    h1 { font-size: 1.3em; text-align: center; margin-bottom: 16px; color: #c2185b; }
+    .container { max-width: 670px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: calc(1.3em - 2pt); text-align: center; margin-bottom: 16px; color: #c2185b; }
     .scroll { overflow-x: auto; margin-bottom: 20px; }
-    table { border-collapse: collapse; table-layout: fixed; width: 580px; font-size: 0.95em; }
-    table.c4 { width: 480px; }
-    table.c3 { width: 380px; }
+    table { border-collapse: collapse; table-layout: fixed; width: 670px; font-size: calc(0.95rem - 2pt); }
+    table.c4 { width: 570px; }
+    table.c3 { width: 440px; }
     col.first-column { width: 180px; }
+    col.data-column { width: 130px; }
+    col.payout-column { width: 100px; }
     th, td { border: 1px solid #666; padding: 5px 8px; text-align: center; }
     th { background: #d9d9d9; }
-    th.title { background: #bfbfbf; }
+    th.title { background: #bfbfbf; font-size: 0.95rem; }
     td.name { text-align: left; background: #f2f2f2; font-weight: bold; }
     td.calc { background: #fff; }
     td.in { background: #ffff00; padding: 0; }
@@ -31,10 +33,10 @@
     td.pay { background: #c6e0b4; }
     td.nopay { background: #f8cbad; color: #c00000; }
     td.money { font-weight: bold; }
-    td.total { background: #00b050; color: #fff; font-weight: bold; font-size: 1.1em; }
-    .reset { background: #1976d2; color: #fff; border: none; border-radius: 5px; padding: 10px 18px; font-size: 1em; cursor: pointer; }
+    td.total { background: #00b050; color: #fff; font-weight: bold; font-size: calc(1.045rem - 2pt); }
+    .reset { background: #1976d2; color: #fff; border: none; border-radius: 5px; padding: 10px 18px; font-size: calc(1em - 2pt); cursor: pointer; }
     .reset:hover { background: #0d47a1; }
-    .note { font-size: 0.85em; color: #555; text-align: center; margin-top: 12px; }
+    .note { font-size: calc(0.85em - 2pt); color: #555; text-align: center; margin-top: 12px; }
   </style>
 </head>
 <body>
@@ -69,7 +71,7 @@
         ${field(`d${n}_${m.key}_p`, m.kind)}${field(`d${n}_${m.key}_c`, m.kind)}
         <td class="calc" id="d${n}_${m.key}_m">—</td><td class="calc money" id="d${n}_${m.key}_pay">—</td></tr>`).join('');
       return `<div class="scroll"><table>
-        <colgroup><col class="first-column"><col span="4"></colgroup>
+        <colgroup><col class="first-column"><col class="data-column" span="3"><col class="payout-column"></colgroup>
         <thead><tr><th colspan="5" class="title" style="padding:0;">${nameField('name' + n, def)}</th></tr>
         <tr><th>Metrics</th><th>Previous Month</th><th>Current Month</th><th>MoM</th><th>Payouts</th></tr></thead>
         <tbody>${rows}</tbody></table></div>`;
@@ -80,7 +82,7 @@
         ${field(`${prefix}${n}_p`, 'int')}${field(`${prefix}${n}_c`, 'int')}
         <td class="calc money" id="${prefix}${n}_pay">—</td></tr>`).join('');
       return `<div class="scroll"><table class="c4">
-        <colgroup><col class="first-column"><col span="3"></colgroup>
+        <colgroup><col class="first-column"><col class="data-column" span="3"></colgroup>
         <thead><tr><th colspan="4" class="title">${title}</th></tr>
         <tr><th>District</th><th>Previous Rank</th><th>Current Rank</th><th>Payouts</th></tr></thead>
         <tbody>${rows}</tbody></table></div>`;
@@ -94,7 +96,7 @@
 
     $('app').innerHTML = `
       <div class="scroll"><table>
-        <colgroup><col class="first-column"><col span="4"></colgroup>
+        <colgroup><col class="first-column"><col class="data-column" span="3"><col class="payout-column"></colgroup>
         <thead><tr><th colspan="5" class="title">Company Performance</th></tr>
         <tr><th>Metrics</th><th>Previous Month</th><th>Current Month</th><th>MoM</th><th>Base Payouts</th></tr></thead>
         <tbody>${companyRows}</tbody></table></div>
@@ -103,12 +105,12 @@
       ${bonusTable('Sustained Bonus', 's')}
       ${bonusTable('Graduation Bonus', 'g')}
       <div class="scroll"><table class="c3">
-        <colgroup><col class="first-column"><col span="2"></colgroup><tbody><tr>
+        <colgroup><col class="first-column"><col class="data-column" span="2"></colgroup><tbody><tr>
         <td class="name">Certification Bonus</td>
         <td class="in"><select id="cert" data-kind="select"><option value="no">No</option><option value="yes">Yes</option></select></td>
         <td class="calc money" id="cert_pay">$0</td></tr></tbody></table></div>
       <div class="scroll"><table class="c3">
-        <colgroup><col class="first-column"><col span="2"></colgroup>
+        <colgroup><col class="first-column"><col class="data-column" span="2"></colgroup>
         <thead><tr><th>RDM Payouts</th><th>Potential</th><th>Payout</th></tr></thead>
         <tbody id="summary"></tbody></table></div>`;
 
