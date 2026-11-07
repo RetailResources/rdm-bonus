@@ -6,13 +6,13 @@
   <title>RDM Bonus</title>
   <style>
     body { background: #fff; font-family: Arial, sans-serif; margin: 0; }
-    .container { max-width: 622px; margin: 0 auto; padding: 24px; }
+    .container { max-width: 593px; margin: 0 auto; padding: 24px; }
     h1 { font-size: calc(1.3em - 2pt); text-align: center; margin-bottom: 16px; color: #c2185b; }
     .scroll { overflow-x: auto; margin-bottom: 20px; }
-    table { border-collapse: collapse; table-layout: fixed; width: 622px; font-size: calc(0.95rem - 2pt); }
-    table.c4 { width: 522px; }
-    table.c3 { width: 408px; }
-    col.first-column { width: 180px; }
+    table { border-collapse: collapse; table-layout: fixed; width: 592px; font-size: calc(0.95rem - 2pt); }
+    table.c4 { width: 492px; }
+    table.c3 { width: 378px; }
+    col.first-column { width: 150px; }
     col.data-column { width: 114px; }
     col.payout-column { width: 100px; }
     th, td { border: 1px solid #666; padding: 5px 8px; text-align: center; }
@@ -34,9 +34,26 @@
     td.nopay { background: #f8cbad; color: #c00000; }
     td.money { font-weight: bold; }
     td.total { background: #00b050; color: #fff; font-weight: bold; font-size: calc(1.045rem - 2pt); }
+    td.positive-payout { color: #003d1a; font-weight: bold; }
     .reset { background: #1976d2; color: #fff; border: none; border-radius: 5px; padding: 10px 18px; font-size: calc(1em - 2pt); cursor: pointer; }
     .reset:hover { background: #0d47a1; }
     .note { font-size: calc(0.85em - 2pt); color: #555; text-align: center; margin-top: 12px; }
+    @media (max-width: 640px) {
+      .container { padding: 16px 8px; }
+      table { width: 100%; font-size: clamp(7px, 2.2vw, 12.533px); }
+      table.c4 { width: 83%; }
+      table.c3 { width: 64%; }
+      col.first-column { width: 26%; }
+      col.data-column { width: 19%; }
+      col.payout-column { width: 17%; }
+      .c4 col.first-column { width: 31.325%; }
+      .c4 col.data-column { width: 22.892%; }
+      .c3 col.first-column { width: 40.625%; }
+      .c3 col.data-column { width: 29.6875%; }
+      th, td { padding: 5px 1px; }
+      td.in input, td.in select, td.name-cell input { padding: 5px 2px; }
+      td.total { font-size: 1.1em; }
+    }
   </style>
 </head>
 <body>
@@ -89,10 +106,10 @@
     }
 
     const companyRows = METRICS.map(m => m.key === 'cslb'
-      ? `<tr><td class="name">${m.label}</td><td colspan="3" class="black"></td><td class="calc money">${'$' + BASE.cslb.toFixed(2)}</td></tr>`
+      ? `<tr><td class="name">${m.label}</td><td colspan="3" class="black"></td><td class="calc money positive-payout">${'$' + BASE.cslb.toFixed(2)}</td></tr>`
       : `<tr><td class="name">${m.label}</td>
           ${field(`c_${m.key}_p`, m.kind)}${field(`c_${m.key}_c`, m.kind)}
-          <td class="calc" id="c_${m.key}_m">—</td><td class="calc money">${'$' + BASE[m.key].toFixed(2)}</td></tr>`).join('');
+          <td class="calc" id="c_${m.key}_m">—</td><td class="calc money positive-payout">${'$' + BASE[m.key].toFixed(2)}</td></tr>`).join('');
 
     $('app').innerHTML = `
       <div class="scroll"><table>
@@ -168,6 +185,11 @@
 
     const readValue = id => id === 'cert' ? $(id).value : parse(id);
     const momText = (m, v) => m.kind === 'int' ? (Number.isFinite(v) ? String(v) : '—') : pctText(v);
+    function showPayout(id, amount, known = true, format = money) {
+      const cell = $(id);
+      cell.textContent = known ? format(amount) : '—';
+      cell.classList.toggle('positive-payout', known && amount > 0);
+    }
 
     function render() {
       const r = compute(readValue);
@@ -182,13 +204,13 @@
           const x = d.metrics[m.key];
           $(`d${i + 1}_${m.key}_m`).textContent = momText(m, x.mom);
           $(`d${i + 1}_${m.key}_m`).className = 'calc ' + (x.known ? (x.pays ? 'pay' : 'nopay') : '');
-          $(`d${i + 1}_${m.key}_pay`).textContent = x.known ? money(x.payout) : '—';
+          showPayout(`d${i + 1}_${m.key}_pay`, x.payout, x.known);
         });
       });
       [['s', r.sustained], ['g', r.graduation]].forEach(([prefix, list]) => {
-        list.forEach((b, i) => { $(`${prefix}${i + 1}_pay`).textContent = b.known ? moneyWhole(b.payout) : '—'; });
+        list.forEach((b, i) => { showPayout(`${prefix}${i + 1}_pay`, b.payout, b.known, moneyWhole); });
       });
-      $('cert_pay').textContent = moneyWhole(r.cert);
+      showPayout('cert_pay', r.cert, true, moneyWhole);
 
       const rows = [
         [names[0], DISTRICT_POTENTIAL, r.districts[0].total, true],
@@ -199,8 +221,8 @@
       ];
       const fmt = (v, cents) => cents ? money(v) : moneyWhole(v);
       $('summary').innerHTML = rows.map(([label, pot, pay, cents]) =>
-        `<tr><td class="name"></td><td class="calc">${fmt(pot, cents)}</td><td class="calc money">${fmt(pay, cents)}</td></tr>`).join('')
-        + `<tr><td class="name">TOTAL</td><td class="calc money">${money(rows.reduce((s, x) => s + x[1], 0))}</td><td class="total">${money(r.total)}</td></tr>`;
+        `<tr><td class="name"></td><td class="calc">${fmt(pot, cents)}</td><td class="calc money${pay > 0 ? ' positive-payout' : ''}">${fmt(pay, cents)}</td></tr>`).join('')
+        + `<tr><td class="name">TOTAL</td><td class="calc money">${money(rows.reduce((s, x) => s + x[1], 0))}</td><td class="total${r.total > 0 ? ' positive-payout' : ''}">${money(r.total)}</td></tr>`;
       // Labels are set as text so district names are never parsed as HTML
       [...$('summary').rows].slice(0, rows.length).forEach((row, i) => { row.cells[0].textContent = rows[i][0]; });
     }
